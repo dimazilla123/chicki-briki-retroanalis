@@ -21,6 +21,8 @@ struct State
     Status status() const;
     
     bool operator<(const State& other) const;
+    bool operator==(const State& other) const;
+    bool operator!=(const State& other) const;
 };
 
 std::vector<State> get_next_states(const State& st);

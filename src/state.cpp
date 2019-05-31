@@ -33,6 +33,21 @@ bool State::operator<(const State& other) const
                     other.turn);
 }
 
+bool State::operator==(const State& other) const
+{
+    return std::tie(player_data[0][0], player_data[0][1],
+                    player_data[1][0], player_data[1][1],
+                    turn) ==
+           std::tie(other.player_data[0][0], other.player_data[0][1],
+                    other.player_data[1][0], other.player_data[1][1],
+                    other.turn);
+}
+
+bool State::operator!=(const State& other) const
+{
+    return !(*(this) == other);
+}
+
 std::vector<State> get_next_states(const State& st)
 {
     std::vector<State> ret;
