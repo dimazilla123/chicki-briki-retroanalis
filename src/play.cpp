@@ -3,17 +3,7 @@
 #include <fstream>
 #include <cassert>
 #include "dumper.h"
-
-char prompt(const std::string& message, const std::string& choses)
-{
-    std::cout << message << "[" << choses << "]\n";
-    std::string answ;
-    std::cin >> answ;
-    assert(answ.size() != 0);
-    auto it = std::find(choses.begin(), choses.end(), answ.front());
-    assert(it != choses.end());
-    return answ.front();
-}
+#include "print_utils.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,22 +11,35 @@ int main(int argc, char *argv[])
     std::map<State, Status> statuses = load_map<State, Status>(in);
 
     State current = State{.player_data = {{1, 1}, {1, 1}}, .turn = 0};
-    int ai_turn = 1;
     while (current.status() == Status::DRAW) {
         if (current.turn != ai_turn) {
-            std::cout << "AI hands: " << current.player_data[ai_turn][0] << " " << current.player_data[ai_turn][1] << "\n";
-            std::cout << "Player hands: " << current.player_data[ai_turn ^ 1][0] << " " << current.player_data[ai_turn ^ 1][1] << "\n";
-            current.next();
+            print_state(current);
+            print_status(statuses[current]);
             std::string choses = "lr";
-            if ((current.fingers(0) + current.fingers(1)) % 2 == 0)
+            if ((current.fingers(0) + current.fingers(1)) % 2 == 0 && (current.fingers(0) != current.fingers(1)))
                 choses.push_back('s');
             char answ = prompt("What to do (l to attack with left, r to attack with right, s to merge hands (if sum is even))?", choses);
-            break;
+            if (answ == 's') {
+                current.player_data[ai_turn ^ 1][0] = current.player_data[ai_turn & 1][1] = (current.player_data[ai_turn ^ 1][0] +
+                                                                                             current.player_data[ai_turn ^ 1][1]) / 2;
+                current.next();
+            } else {
+                int attack_hand = (answ == 'l' ? 0 : 1);
+                answ = prompt("Who would you attack (p -- yourself, a -- enemy)?", "pa");
+                int to_strike = ai_turn;
+                if (answ == 'p')
+                    to_strike ^= 1;
+                answ = prompt("Which hand to attack?", (to_strike != ai_turn ? (attack_hand == 0 ? "r" : "1") : "lr"));
+                int targ_hand = (answ == 'l' ? 0 : 1);
+                current.player_data[to_strike][targ_hand] += current.player_data[ai_turn ^ 1][attack_hand];
+                current.player_data[to_strike][targ_hand] %= MAX_FINGERS;
+            }
+            current.next();
         } else {
             auto variants = get_next_states(current);
             State chose = variants.front();
             for (auto var : variants) {
-                if (statuses[var] == Status::LOSE) {
+                if (statuses[var] == Status::LOSE || (statuses[chose] == Status::WIN && statuses[var] == Status::DRAW)) {
                     chose = var;
                     break;
                 }
@@ -44,6 +47,8 @@ int main(int argc, char *argv[])
             current = chose;
         }
     }
+    print_state(current);
+    print_status(statuses[current]);
 
     if (current.turn == ai_turn)
         current.next();

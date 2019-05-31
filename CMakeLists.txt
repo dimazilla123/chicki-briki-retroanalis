@@ -7,7 +7,7 @@ include_directories(src)
 
 set(ANALISATOR_SRC src/analisator.cpp)
 set(PLAY_SRC src/play.cpp)
-set(LIB_SRC src/state.cpp src/retroanalis.cpp src/dumper.cpp)
+set(LIB_SRC src/state.cpp src/retroanalis.cpp src/dumper.cpp src/print_utils.cpp)
 
 add_library(retroanalis STATIC ${LIB_SRC})
 add_executable(analisator ${ANALISATOR_SRC})

@@ -77,7 +77,7 @@ std::vector<State> get_next_states(const State& st)
         to_add.player_data[st.turn][0] %= MAX_FINGERS;
         ret.push_back(to_add);
     }
-    if ((st.fingers(0) + st.fingers(1)) % 2 == 0) {
+    if ((st.fingers(0) + st.fingers(1)) % 2 == 0 && st.fingers(0) != st.fingers(1)) {
         State to_add = st;
         to_add.next();
         to_add.player_data[st.turn][0] = to_add.player_data[st.turn][1] = (st.fingers(0) + st.fingers(1)) / 2;
