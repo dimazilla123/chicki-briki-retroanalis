@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
                 int to_strike = ai_turn;
                 if (answ == 'p')
                     to_strike ^= 1;
-                answ = prompt("Which hand to attack?", (to_strike != ai_turn ? (attack_hand == 0 ? "r" : "1") : "lr"));
+                answ = prompt("Which hand to attack?", (to_strike != ai_turn ? (attack_hand == 0 ? "r" : "l") : "lr"));
                 int targ_hand = (answ == 'l' ? 0 : 1);
                 current.player_data[to_strike][targ_hand] += current.player_data[ai_turn ^ 1][attack_hand];
                 current.player_data[to_strike][targ_hand] %= MAX_FINGERS;
