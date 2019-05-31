@@ -2,15 +2,37 @@
 #include <algorithm>
 #include <fstream>
 #include <cassert>
+#include <unistd.h>
 #include "dumper.h"
 #include "print_utils.h"
 
 int main(int argc, char *argv[])
 {
+    State current = State{.player_data = {{1, 1}, {1, 1}}, .turn = 0};
+
+    int op;
+    while ((op = getopt(argc, argv, "ht:l:r:L:R:")) != -1) {
+        if (op == 'h') {
+            std::cout << "Usage" << "\n";
+            std::cout << "-h -- help" << "\n";
+            std::cout << "-l n -- n fingers at left player's hand" << "\n";
+            std::cout << "-r n -- n fingers at left player's hand" << "\n";
+            std::cout << "-L n -- n fingers at left AI's hand" << "\n";
+            std::cout << "-R n -- n fingers at left AI's hand" << "\n";
+            return 0;
+        } else if (op == 'l')
+            current.player_data[0][0] = std::stoi(optarg) % MAX_FINGERS;
+        else if (op == 'r')
+            current.player_data[0][1] = std::stoi(optarg) % MAX_FINGERS;
+        else if (op == 'L')
+            current.player_data[1][0] = std::stoi(optarg) % MAX_FINGERS;
+        else if (op == 'R')
+            current.player_data[1][1] = std::stoi(optarg) % MAX_FINGERS;
+    }
+
     std::ifstream in(standart_dump_name, std::ios::binary);
     std::map<State, Status> statuses = load_map<State, Status>(in);
 
-    State current = State{.player_data = {{1, 1}, {1, 1}}, .turn = 0};
     while (current.status() == Status::DRAW) {
         if (current.turn != ai_turn) {
             print_state(current);
