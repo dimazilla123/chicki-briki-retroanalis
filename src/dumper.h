@@ -6,6 +6,8 @@
 #include <ostream>
 #include <istream>
 
+const std::string standart_dump_name = "status-dump.data";
+
 template<typename T> void dump(const T& obj, std::ostream& out);
 template<typename T> T load(std::istream& in);
 

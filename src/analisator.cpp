@@ -13,7 +13,7 @@ int main()
     std::map<State, Status> stats;
     analis(stats);
 
-    std::ofstream out("status-dump.data", std::ios::binary);
+    std::ofstream out(standart_dump_name, std::ios::binary);
     dump_map(stats, out);
 
     return 0;
