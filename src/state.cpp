@@ -1,5 +1,6 @@
 #include "state.h"
 #include <cassert>
+#include <tuple>
 
 int State::fingers(int hand, int player) const
 {
@@ -10,6 +11,26 @@ int State::fingers(int hand, int player) const
 void State::next()
 {
     turn ^= 1;
+}
+
+Status State::status() const
+{
+    if (player_data[turn][0] == player_data[turn][1] && player_data[turn][0] == 0)
+        return Status::LOSE;
+    int other = turn ^ 1;
+    if (player_data[other][0] == player_data[other][1] && player_data[other][0] == 0)
+        return Status::WIN;
+    return Status::DRAW;
+}
+
+bool State::operator<(const State& other) const
+{
+    return std::tie(player_data[0][0], player_data[0][1],
+                    player_data[1][0], player_data[1][1],
+                    turn) <
+           std::tie(other.player_data[0][0], other.player_data[0][1],
+                    other.player_data[1][0], other.player_data[1][1],
+                    other.turn);
 }
 
 std::vector<State> get_next_states(const State& st)
