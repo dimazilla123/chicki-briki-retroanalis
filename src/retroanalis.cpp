@@ -1,12 +1,14 @@
 #include "retroanalis.h"
 #include <algorithm>
 #include <queue>
+#include <iostream>
 
 using Graph = std::map<State, std::vector<State>>;
 
 Graph prepare(std::queue<State>& q, std::map<State, Status>& stats,
                                     std::map<State, int>& cnt)
 {
+    std::cerr << "Prepare" << "\n";
     Graph h;
     for (int left1 = 0; left1 < MAX_FINGERS; left1++) {
         for (int right1 = 0; right1 < MAX_FINGERS; right1++) {
@@ -42,18 +44,21 @@ void analis(std::map<State, Status>& stats)
     std::queue<State> q;
     std::map<State, int> cnt;
     Graph h = prepare(q, stats, cnt);
+    std::cerr << "Retroanalis" << "\n";
     while (!q.empty()) {
         State st = q.front();
         q.pop();
         if (st.status() == Status::LOSE) {
             for (auto prev_st : h[st]) {
-                stats[prev_st] = Status::WIN;
-                q.push(prev_st);
+                if (stats[prev_st] == Status::DRAW) {
+                    stats[prev_st] = Status::WIN;
+                    q.push(prev_st);
+                }
             }
         } else {
             for (auto prev_st : h[st]) {
                 --cnt[prev_st];
-                if (cnt[prev_st] == 0) {
+                if (cnt[prev_st] == 0 && stats[prev_st] == Status::DRAW) {
                     stats[prev_st] = Status::LOSE;
                     q.push(prev_st);
                 }
