@@ -52,9 +52,9 @@ std::vector<State> get_next_states(const State& st)
 {
     std::vector<State> ret;
     for (int attack_hand = 0; attack_hand < 2; attack_hand++) {
-        State to_add = st;
-        to_add.next();
         for (int target_hand = 0; target_hand < 2; target_hand++) {
+            State to_add = st;
+            to_add.next();
             if (st.fingers(attack_hand) != 0) {
                 to_add.player_data[to_add.turn][target_hand] +=
                     st.player_data[st.turn][attack_hand];
